@@ -34,8 +34,8 @@ app.get('/tasks/:id', (req, res) => {
 
 app.post("/tasks", (req, res) => {
     const { title, done } = req.body;
-    if (!title || typeof title !== 'string' || typeof done !== 'boolean') {
-        return res.status(400).json({ error: "Title and done status are required" });
+    if (!title || typeof title !== 'string'|| title.trim() === '') {
+        return res.status(400).json({ error: "Title is required and cannot be empty" });
     }
     const task = {
         id: tasks.length + 1,
