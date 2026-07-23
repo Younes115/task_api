@@ -32,6 +32,20 @@ app.get('/tasks/:id', (req, res) => {
     res.json(task);
 });
 
+app.post("/tasks", (req, res) => {
+    const { title, done } = req.body;
+    if (!title || typeof title !== 'string' || typeof done !== 'boolean') {
+        return res.status(400).json({ error: "Title and done status are required" });
+    }
+    const task = {
+        id: tasks.length + 1,
+        title,
+        done: false
+    };
+    tasks.push(task);
+    res.status(201).json(task);
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
