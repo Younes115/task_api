@@ -1,8 +1,14 @@
+const swaggerUi = require('swagger-ui-express');
+const fs = require('fs');
 const express = require('express');
 
 const app = express();  
 
 app.use(express.json());
+
+const openapiDocument = JSON.parse(fs.readFileSync('./openapi.json', 'utf8'));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiDocument));
+
 const PORT = process.env.PORT || 3000;
 // sample data for tasks
 let tasks = [
