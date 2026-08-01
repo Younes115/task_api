@@ -41,15 +41,30 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/tasks', (req, res) => {
-  res.json(tasks);
+  const stmt = db.prepare('SELECT * FROM tasks');
+    const tasks = stmt.all();
+    
+    const formattedTasks = tasks.map(t => ({
+        ...t,
+        done: t.done === 1
+    }));
+
+    res.json(formattedTasks);
 });
 
 app.get('/tasks/:id', (req, res) => {
-    const taskId = parseInt(req.params.id);
-    const task = tasks.find(t => t.id === taskId);
-    if(!task) {
+   const taskId = parseInt(req.params.id);
+    
+   
+    const stmt = db.prepare('SELECT * FROM tasks WHERE id = ?');
+    const task = stmt.get(taskId);
+
+    
+    if (!task) {
         return res.status(404).json({ "error": "Task not found" });
     }
+
+    task.done = task.done === 1;
     res.json(task);
 });
 
