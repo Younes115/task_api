@@ -69,17 +69,27 @@ app.get('/tasks/:id', (req, res) => {
 });
 
 app.post("/tasks", (req, res) => {
-    const { title, done } = req.body;
-    if (!title || typeof title !== 'string'|| title.trim() === '') {
-        return res.status(400).json({ error: "Title is required and cannot be empty" });
+    const { title } = req.body;
+
+    
+    if (!title || typeof title !== 'string' || title.trim() === '') {
+        return res.status(400).json({ "error": "Title is required and cannot be empty" });
     }
-    const task = {
-        id: tasks.length + 1,
-        title,
-        done: false
+
+   
+    const stmt = db.prepare('INSERT INTO tasks (title, done) VALUES (?, ?)');
+    
+   
+    const info = stmt.run(title.trim(), 0);
+
+    const newTask = {
+        id: info.lastInsertRowid, 
+        title: title.trim(),
+        done: false 
     };
-    tasks.push(task);
-    res.status(201).json(task);
+
+  
+    res.status(201).json(newTask);
 });
 
 
