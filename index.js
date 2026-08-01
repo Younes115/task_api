@@ -1,21 +1,36 @@
 const swaggerUi = require('swagger-ui-express');
 const fs = require('fs');
 const express = require('express');
+const Database = require('better-sqlite3');
 
 const app = express();  
 
 app.use(express.json());
 
+const db = new Database('tasks.db');
+
 const openapiDocument = JSON.parse(fs.readFileSync('./openapi.json', 'utf8'));
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapiDocument));
 
 const PORT = process.env.PORT || 3000;
-// sample data for tasks
-let tasks = [
-    { id: 1, title: "Learn Express", done: true },
-    { id: 2, title: "Build CRUD API", done: false },
-    { id: 3, title: "Publish to GitHub", done: false }
-];
+
+db.exec(`
+    CREATE TABLE IF NOT EXISTS tasks (
+        id INTEGER PRIMARY KEY,
+        title TEXT,
+        done INTEGER
+    )
+`);
+
+const countStmt = db.prepare('SELECT COUNT(*) AS count FROM tasks');
+const rowCount = countStmt.get().count;
+
+if (rowCount === 0) {
+    const insertStmt = db.prepare('INSERT INTO tasks (title, done) VALUES (?, ?)');
+    insertStmt.run('Learn Express', 1);
+    insertStmt.run('Build CRUD API', 0);
+    insertStmt.run('Connect to SQLite', 0);
+}
 
 app.get('/', (req, res) => {
  res.json({ "name": "Task API", "version": "1.0", "endpoints": ["/tasks"] });
