@@ -55,3 +55,16 @@ Keep-Alive: timeout=5
 
 *![alt text](image.png)
 ![alt text](image-1.png)
+
+## Database Storage (SQLite)
+
+* **Why SQLite?** SQLite was chosen because it's a single file database, requires zero setup, and ensures our data survives server restarts.
+* **Database Location:** The database lives in a file named `tasks.db` in the root directory. It is created automatically the first time the application runs. It is git-ignored so each clone starts fresh.
+* **How to Start:** Run `npm start` to start the server. The database and table will be created automatically, and seeded with 3 example tasks if empty.
+* **Example SQL Query:** I ran the following query during testing to count the number of tasks:
+  ```sql
+ UPDATE tasks SET done = 1;
+ ![alt text](image-2.png)
+
+ SELECT * FROM tasks WHERE done = 1;
+![alt text](image-4.png)
